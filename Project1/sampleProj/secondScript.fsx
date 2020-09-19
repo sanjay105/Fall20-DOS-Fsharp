@@ -27,9 +27,9 @@ let lucasGen (mailbox:Actor<_>)=
         //printfn "Job %i started" index
         let result = checkLucas index k
         if result then
-            let printresref = spawn system ("print"+(string index)) (actorOf (fun msg -> printfn "%i" msg))
-            printresref <! index
-            //printfn "%i" index
+            //let printresref = spawn system ("print"+(string index)) (actorOf (fun msg -> printfn "%i" msg))
+            //printresref <! index
+            printfn "%i" index
         return! loop()
     }
     loop()

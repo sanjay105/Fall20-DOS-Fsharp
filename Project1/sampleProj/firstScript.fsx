@@ -16,6 +16,7 @@ type lucasGenMessage = LucasGenJob of int*int
 let square x = x*x
 
 let checkLucas ind k : bool=
+    printfn "here %i" ind
     let mutable sum = 0
     for i=ind to ind+k-1 do
         sum <- sum + (i * i)
@@ -41,7 +42,7 @@ let lucasGenRef2 = spawn system "lucasGen2" lucasGen
 let lucasGenRef3 = spawn system "lucasGen3" lucasGen
 
 
-let l = seq{1 .. 1000000-4}
+let l = seq{1 .. 1000000}
 let k= 21
 for i in l do
     if i%3 = 0 then
@@ -52,7 +53,7 @@ for i in l do
         lucasGenRef3 <! LucasGenJob(i,k)
     //lucasGenRef1 <! LucasGenJob(i,k)
 printfn "BeforeTerminate"
-
+Thread.Sleep(1000)
 system.Terminate()
 
 printfn "Done"
