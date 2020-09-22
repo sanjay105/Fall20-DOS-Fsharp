@@ -9,7 +9,7 @@ for i in 1L .. k do
 for i in k+1L .. N+1L do
     let squareRoot = sqrt (double sum) 
     if (int64 sum) = (int64 squareRoot) * (int64 squareRoot) then
-        printfn "%d" (i-k)
+        printfn "%i" (i-k) 
     sum <- sum - ((i - k)*(i - k))
     sum <- sum + (i * i)
 

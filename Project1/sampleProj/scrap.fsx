@@ -30,3 +30,9 @@ printfn "%i" res
 // let k = 24
 // for i in 1 .. N do
 //     canFormLucasPyramid i k |> ignore
+let mutable i = 21
+let num = 2500
+while (i*i) < num do
+    i <- i+1
+if (i*i)=num then 
+    printfn "print %i" i

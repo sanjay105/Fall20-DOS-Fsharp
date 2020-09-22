@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Sanjay\\OneDrive - University of Florida\\Fall 2020\\DOS\\Fall20-DOS-Fsharp\\Project1\\sampleProj\\sampleProj.fsproj": {}
+    "C:\\Users\\Sanjay\\OneDrive - University of Florida\\Fall 2020\\DOS\\Fall20-DOS-Fsharp\\remotetest\\remotetest\\remotetest.fsproj": {}
   },
   "projects": {
-    "C:\\Users\\Sanjay\\OneDrive - University of Florida\\Fall 2020\\DOS\\Fall20-DOS-Fsharp\\Project1\\sampleProj\\sampleProj.fsproj": {
+    "C:\\Users\\Sanjay\\OneDrive - University of Florida\\Fall 2020\\DOS\\Fall20-DOS-Fsharp\\remotetest\\remotetest\\remotetest.fsproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Sanjay\\OneDrive - University of Florida\\Fall 2020\\DOS\\Fall20-DOS-Fsharp\\Project1\\sampleProj\\sampleProj.fsproj",
-        "projectName": "sampleProj",
-        "projectPath": "C:\\Users\\Sanjay\\OneDrive - University of Florida\\Fall 2020\\DOS\\Fall20-DOS-Fsharp\\Project1\\sampleProj\\sampleProj.fsproj",
+        "projectUniqueName": "C:\\Users\\Sanjay\\OneDrive - University of Florida\\Fall 2020\\DOS\\Fall20-DOS-Fsharp\\remotetest\\remotetest\\remotetest.fsproj",
+        "projectName": "remotetest",
+        "projectPath": "C:\\Users\\Sanjay\\OneDrive - University of Florida\\Fall 2020\\DOS\\Fall20-DOS-Fsharp\\remotetest\\remotetest\\remotetest.fsproj",
         "packagesPath": "C:\\Users\\Sanjay\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Sanjay\\OneDrive - University of Florida\\Fall 2020\\DOS\\Fall20-DOS-Fsharp\\Project1\\sampleProj\\obj\\",
+        "outputPath": "C:\\Users\\Sanjay\\OneDrive - University of Florida\\Fall 2020\\DOS\\Fall20-DOS-Fsharp\\remotetest\\remotetest\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Sanjay\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -33,44 +33,19 @@
       "frameworks": {
         "netcoreapp3.1": {
           "dependencies": {
-            "Akka": {
-              "target": "Package",
-              "version": "[1.4.10, )",
-              "generatePathProperty": true
-            },
             "Akka.FSharp": {
-              "target": "Package",
-              "version": "[1.4.10, )",
-              "generatePathProperty": true
-            },
-            "Akka.Persistence": {
               "target": "Package",
               "version": "[1.4.10, )",
               "generatePathProperty": true
             },
             "Akka.Remote": {
               "target": "Package",
-              "version": "[1.4.10, )",
-              "generatePathProperty": true
-            },
-            "Akka.TestKit": {
-              "target": "Package",
-              "version": "[1.4.10, )",
-              "generatePathProperty": true
+              "version": "[*, )"
             },
             "FSharp.Core": {
               "target": "Package",
               "version": "[4.7.2, )",
               "generatePathProperty": true
-            },
-            "Hyperion": {
-              "target": "Package",
-              "version": "[0.9.16, )",
-              "generatePathProperty": true
-            },
-            "akkling": {
-              "target": "Package",
-              "version": "[*, )"
             }
           },
           "imports": [

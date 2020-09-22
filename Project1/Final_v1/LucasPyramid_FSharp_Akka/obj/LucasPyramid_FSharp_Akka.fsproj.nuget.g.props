@@ -16,12 +16,6 @@
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
-    <PkgHyperion Condition=" '$(PkgHyperion)' == '' ">C:\Users\Sanjay\.nuget\packages\hyperion\0.9.16</PkgHyperion>
     <PkgFSharp_Core Condition=" '$(PkgFSharp_Core)' == '' ">C:\Users\Sanjay\.nuget\packages\fsharp.core\4.7.2</PkgFSharp_Core>
-    <PkgAkka Condition=" '$(PkgAkka)' == '' ">C:\Users\Sanjay\.nuget\packages\akka\1.4.10</PkgAkka>
-    <PkgAkka_TestKit Condition=" '$(PkgAkka_TestKit)' == '' ">C:\Users\Sanjay\.nuget\packages\akka.testkit\1.4.10</PkgAkka_TestKit>
-    <PkgAkka_Remote Condition=" '$(PkgAkka_Remote)' == '' ">C:\Users\Sanjay\.nuget\packages\akka.remote\1.4.10</PkgAkka_Remote>
-    <PkgAkka_Persistence Condition=" '$(PkgAkka_Persistence)' == '' ">C:\Users\Sanjay\.nuget\packages\akka.persistence\1.4.10</PkgAkka_Persistence>
-    <PkgAkka_FSharp Condition=" '$(PkgAkka_FSharp)' == '' ">C:\Users\Sanjay\.nuget\packages\akka.fsharp\1.4.10</PkgAkka_FSharp>
   </PropertyGroup>
 </Project>

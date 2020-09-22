@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "FbfTouJ/H68+ELRzHVSEgJkudlZUOWKOJb2kFtT5xyKaMreYJIZa8dfGmFzHANz8gfR0Ux/M7L2vUXFB3J41xw==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Sanjay\\OneDrive - University of Florida\\Fall 2020\\DOS\\Fall20-DOS-Fsharp\\Project1\\Final_v1\\LucasPyramid_FSharp_Akka\\LucasPyramid_FSharp_Akka.fsproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Sanjay\\.nuget\\packages\\fsharp.core\\4.7.2\\fsharp.core.4.7.2.nupkg.sha512"
+  ],
+  "logs": []
+}

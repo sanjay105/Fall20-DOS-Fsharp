@@ -7,8 +7,8 @@ open Akka.Actor
 open Akka.Configuration
 open Akka.FSharp
 
-let N = 1000000
-let k = 256
+let N = 10000000
+let k = 2
 let mutable count=0
 let mutable finish=false
 let system = ActorSystem.Create("Master")
