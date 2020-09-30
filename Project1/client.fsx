@@ -19,8 +19,8 @@ let addr = "akka.tcp://RemoteFSharp@" + serverip + ":" + s_port + "/user/server"
 
 
 let mutable count=0L //to keep track of the workers
-let workers = System.Environment.ProcessorCount |> int64
-
+//let workers = System.Environment.ProcessorCount |> int64
+let workers = 10L
 let configuration = 
     ConfigurationFactory.ParseString(
         @"akka {
@@ -136,7 +136,7 @@ let commlink =
                     system.Terminate() |> ignore
                     remoteWorkDone <- true
                 else
-                    printfn "-%s-" msg
+                    printfn "%s" msg
 
                 return! loop() 
             }

@@ -22,7 +22,7 @@ let configuration =
             remote {
                 helios.tcp {
                     port = 8777
-                    hostname = 192.168.0.96
+                    hostname = localhost
                 }
             }
         }")
@@ -33,7 +33,8 @@ type ActorMsg =
     | EndMsg of int64*int64
     | ResultMsg of int64
 let mutable count=0L //to keep track of the workers
-let workers = System.Environment.ProcessorCount |> int64
+//let workers = System.Environment.ProcessorCount |> int64
+let workers = 8L
 let system = ActorSystem.Create("RemoteFSharp", configuration)
 let mutable ref = null
 
