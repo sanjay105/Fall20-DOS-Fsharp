@@ -22,7 +22,7 @@ let configuration =
             remote {
                 helios.tcp {
                     port = 8777
-                    hostname = localhost
+                    hostname = 192.168.0.229
                 }
             }
         }")
