@@ -103,7 +103,7 @@ let commlink =
                 return! loop() 
             }
         loop()
-printfn "%A" system.Mailboxes
+
 // let echoClient = system.ActorSelection(
 //                             "akka.tcp://RemoteFSharp@localhost:8778/user/EchoServer")
 
