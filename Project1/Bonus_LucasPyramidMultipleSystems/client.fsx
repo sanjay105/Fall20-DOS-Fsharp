@@ -19,8 +19,8 @@ let addr = "akka.tcp://RemoteFSharp@" + serverip + ":" + s_port + "/user/server"
 
 
 let mutable count=0L //to keep track of the workers
-//let workers = System.Environment.ProcessorCount |> int64
-let workers = 10L
+let workers = System.Environment.ProcessorCount |> int64
+
 let configuration = 
     ConfigurationFactory.ParseString(
         @"akka {
@@ -132,11 +132,11 @@ let commlink =
                     echoClient <! msgToServer
                     let DispatcherRef = spawn system "Dispatcher" Dispatcher
                     DispatcherRef <! DispatcherMsg( endN-1L , k)
-                elif response.CompareTo("")=0 then
+                elif response.CompareTo("ProcessingDone")=0 then
                     system.Terminate() |> ignore
                     remoteWorkDone <- true
                 else
-                    printfn "%s" msg
+                    printfn "-%s-" msg
 
                 return! loop() 
             }
