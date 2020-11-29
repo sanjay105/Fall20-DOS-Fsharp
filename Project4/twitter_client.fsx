@@ -1,3 +1,4 @@
+open System.Threading
 #time "on"
 #r "nuget: Akka.FSharp" 
 #r "nuget: Akka.Remote"
@@ -6,77 +7,179 @@ open Akka.Actor
 open Akka.Configuration
 open Akka.FSharp
 
+
+
+let rnd = System.Random()
+let serverip = fsi.CommandLineArgs.[1] |> string
+let serverport = fsi.CommandLineArgs.[2] |>string
+let simid = fsi.CommandLineArgs.[3] |>string
+//"akka.tcp://RemoteFSharp@localhost:8777/user/server"
+let addr = "akka.tcp://TwitterEngine@" + serverip + ":" + serverport + "/user/RequestHandler"
+
 let configuration = 
     ConfigurationFactory.ParseString(
         @"akka {
             actor {
                 provider = ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""
-                debug : {
-                    receive : on
-                    autoreceive : on
-                    lifecycle : on
-                    event-stream : on
-                    unhandled : on
-                }
+                
             }
             remote {
                 helios.tcp {
-                    port = 8779
+                    port = 8778
                     hostname = 192.168.0.96
                 }
             }
         }")
 
 let system = ActorSystem.Create("TwitterClient", configuration)
-
-let serveraddr = "akka.tcp://TwitterEngine@192.168.0.96:8778/user/server"
-
-type ServerMsg =
-    | StartServer
-    | ClientReq
-
-type ClientMsg =
-    | StartClient
-    | ServerAck
-
+let twitterServer = system.ActorSelection(addr)
+let N = 10000
+let mutable activeStatus = Array.create N false
 type SimulatorMsg =
     | Start
+    | ACK
+    | SimulateTweets
+    | Done
+    | ACKSIMTWEET
+    | ACKSIMSUBSCRIBE
+    | Reports
 
-let Client (mailbox:Actor<_>) = 
+let Print (mailbox:Actor<_>) = 
     let rec loop() = actor{
         let! msg = mailbox.Receive()
-        match msg with 
-        | StartClient ->    printfn "Client Started"
-                            let server = system.ActorSelection(serveraddr)
-                            printfn "%A" server.Path
-                            server <! "ClientReq"
-                            
-                            printfn "Request Sent to Server"
-        | ServerAck ->      printfn "Received Ack from Server"
-                      
+        printfn "%s" msg
         return! loop()
     }
     loop()
 
-let clientList=[for a in 1 .. 5 do yield(spawn system ("Client" + (string a)) Client)]
+let mutable workersList = []
 
+let printRef = spawn system "Print" Print
 
+let hashtags = [|"sanjay";"DOS";"COP5615";"UF";"Gainesville"|]
 
-let Simulator (mailbox:Actor<_>) = 
+let Client (mailbox:Actor<_>)=
+    let mutable sim = null
+    let mutable serveruserid = ""
+    let mutable login = false
+    let mutable cid = 0
     let rec loop() = actor{
         let! msg = mailbox.Receive()
-        match msg with 
-        | Start ->  for i in 1..5 do
-                        clientList.[i-1]<!StartClient
+        // printRef <! msg 
+        let response =msg|>string
+        let command = (response).Split '|'
+        if command.[0].CompareTo("Register")=0 then
+            cid <- command.[1] |> int
+            sim <- mailbox.Sender()
+            twitterServer <! "Register|"+mailbox.Self.Path.Name
+        elif command.[0].CompareTo("Login") = 0 then
+            twitterServer <! "Login|"+serveruserid
+        elif command.[0].CompareTo("Logout") = 0 then
+            twitterServer <! "Logout|"+serveruserid
+        elif command.[0].CompareTo("ACK")=0 then
+            if command.[1].CompareTo("Register") = 0 then
+                serveruserid <- command.[2]
+                sim <! ACK
+            elif command.[1].CompareTo("Login") = 0 then
+                printRef <! "User "+serveruserid+" Logged in" 
+                activeStatus.[cid] <- true
+            elif command.[1].CompareTo("Logout") = 0 then
+                printRef <!  "User "+serveruserid+" Logged out" 
+                activeStatus.[cid] <- false
+            elif command.[1].CompareTo("Tweet") = 0 then
+                sim <! ACKSIMTWEET
+            elif command.[1].CompareTo("Subscribe") = 0 then
+                sim <! ACKSIMSUBSCRIBE
+            // system.Terminate() |> ignore
+        elif command.[0].CompareTo("Tweet")=0 then
+            let tweetmsg = "Tweet|"+mailbox.Self.Path.Name+"|"+"Hello @"+command.[1]+" #"+command.[2]
+            
+            twitterServer <! tweetmsg
+            // if rnd.Next(0,5) = 2 then
+            //     mailbox.Self <! "Logout|"
+        elif command.[0].CompareTo("Subscribe") = 0 then
+            let req = "Subscribe|"+mailbox.Self.Path.Name+"|"+command.[1]
+            twitterServer <! req
+        elif command.[0].CompareTo("GetTweets") = 0 then
+            let req = "GetTweets|"+mailbox.Self.Path.Name
+            twitterServer <! req
+        elif command.[0].CompareTo("GetMentions") = 0 then
+            let req = "GetMentions|"+mailbox.Self.Path.Name
+            twitterServer <! req
+        elif command.[0].CompareTo("Response") = 0 then
+            if command.[1].CompareTo("GetTweets") = 0 then
+                printRef <! (mailbox.Self.Path.Name+"\n"+command.[2]+"\n")
+            elif command.[1].CompareTo("GetMentions") = 0 then
+                printfn "%s" command.[2]
+                printRef <! (mailbox.Self.Path.Name+"\n"+command.[2]+"\n")
 
+        
+        else
+            printRef <! msg
         return! loop()
     }
     loop()
 
-let simulatorRef = spawn system "Simulator" Simulator
 
-simulatorRef <! Start
+workersList <- [for a in 1 .. N do yield(spawn system (simid + "_Client_" + (string a)) Client)]
 
 
+
+let Simulator (mailbox:Actor<_>)=
+    let mutable ackcnt = 0
+    let mutable tweetsack = 0
+    let mutable suback = 0
+    let rec loop() = actor{
+        let! msg = mailbox.Receive()
+        match msg with 
+        | Start ->  for i in 0 .. N-1 do
+                        workersList.[i] <! "Register|"+(i|>string)
+                    
+        | ACK ->    ackcnt <- ackcnt + 1
+                    if ackcnt = N then
+                        printRef <! "Total ACK Received"
+                        mailbox.Self <! SimulateTweets
+        | ACKSIMTWEET ->    tweetsack <- tweetsack + 1
+                            printRef <!  ((tweetsack/2)+suback)
+                            if (tweetsack/2)+suback = N*10 then
+                                mailbox.Self <! Reports
+        | ACKSIMSUBSCRIBE ->    suback <- suback + 1
+                                printRef <!  ((tweetsack/2)+suback)
+                                if (tweetsack/2)+suback = N*10 then
+                                    mailbox.Self <! Reports
+        | SimulateTweets -> for i in 0 .. N-1 do
+                                workersList.[i]<!"Login|"
+                            for i in 1 .. 10*N do
+                                let n = rnd.Next(0,N)
+                                // if activeStatus.[n] then
+                                if n%5 = 0 then
+                                    let ind = rnd.Next(0,N)
+                                    let t = rnd.Next(0,N)
+                                    let temp = workersList.[t].Path.Name
+                                    workersList.[ind] <! "Subscribe|"+temp
+                                else
+                                    let ind = rnd.Next(0,N)
+                                    let t = rnd.Next(0,N)
+                                    let temp = workersList.[t].Path.Name
+                                    workersList.[ind] <! "Tweet|"+temp+"|"+hashtags.[t%5]
+
+        | Reports ->
+                        for i in 1 .. N do
+                            workersList.[i-1] <! "GetMentions|"
+                        for i in 1 .. N do
+                            workersList.[i-1] <! "GetTweets|"
+                        mailbox.Self <! Done
+        | Done ->   
+                    twitterServer <! "BackupDB|"
+                    twitterServer <! "Done|"
+                    Thread.Sleep(60000)
+                    mailbox.Context.System.Terminate() |> ignore 
+        return! loop();
+    }
+    loop()
+
+let simRef = spawn system "simulator" Simulator
+
+simRef <! Start
 
 system.WhenTerminated.Wait()
