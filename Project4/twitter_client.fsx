@@ -33,7 +33,7 @@ let configuration =
 
 let system = ActorSystem.Create("TwitterClient", configuration)
 let twitterServer = system.ActorSelection(addr)
-let N = 10000
+let N = 100
 let mutable activeStatus = Array.create N false
 type SimulatorMsg =
     | Start
@@ -182,4 +182,11 @@ let simRef = spawn system "simulator" Simulator
 
 simRef <! Start
 
+
+// let ZipfDistributuion = 
+//     for i in 0 .. N-1 do
+//         workersList.[i] <! ZipfInit(i+1)
+//         workersList.[i] <! AddSubs(i)
+
 system.WhenTerminated.Wait()
+
