@@ -53,69 +53,95 @@ let Print (mailbox:Actor<_>) =
     loop()
 
 let mutable workersList = []
+let hashtags = [|"sanjay";"DOS";"COP5615";"UF";"Gainesville"|]
 
 let printRef = spawn system "Print" Print
 
-let hashtags = [|"sanjay";"DOS";"COP5615";"UF";"Gainesville"|]
+let addSubscriber rank (workers: list<IActorRef>) =
+    for i in 0 .. rank-1 do
+        twitterServer <! "Subscribe|"+workers.[rank-1].Path.Name+"|"+workers.[i].Path.Name
+
+let sendTweetToServer (myref: IActorRef) rank (workers: list<IActorRef>) = 
+    let tweetmsg = "Tweet|"+myref.Path.Name+"|" + "Hello @"+workers.[rnd.Next(0,N)].Path.Name+" #"+ hashtags.[rnd.Next(0,5)]    
+    twitterServer <! tweetmsg
+    let tspan = (rank|>int) * 10
+    system.Scheduler.ScheduleTellOnce(tspan ,myref,"TweetSch",myref)
+
+
 
 let Client (mailbox:Actor<_>)=
     let mutable sim = null
     let mutable serveruserid = ""
     let mutable login = false
     let mutable cid = 0
+    let mutable rank = 0
     let rec loop() = actor{
         let! msg = mailbox.Receive()
         // printRef <! msg 
         let response =msg|>string
         let command = (response).Split '|'
-        if command.[0].CompareTo("Register")=0 then
-            cid <- command.[1] |> int
-            sim <- mailbox.Sender()
-            twitterServer <! "Register|"+mailbox.Self.Path.Name
-        elif command.[0].CompareTo("Login") = 0 then
-            twitterServer <! "Login|"+serveruserid
-        elif command.[0].CompareTo("Logout") = 0 then
-            twitterServer <! "Logout|"+serveruserid
-        elif command.[0].CompareTo("ACK")=0 then
-            if command.[1].CompareTo("Register") = 0 then
-                serveruserid <- command.[2]
-                sim <! ACK
-            elif command.[1].CompareTo("Login") = 0 then
-                printRef <! "User "+serveruserid+" Logged in" 
-                activeStatus.[cid] <- true
-            elif command.[1].CompareTo("Logout") = 0 then
-                printRef <!  "User "+serveruserid+" Logged out" 
-                activeStatus.[cid] <- false
-            elif command.[1].CompareTo("Tweet") = 0 then
-                sim <! ACKSIMTWEET
-            elif command.[1].CompareTo("Subscribe") = 0 then
-                sim <! ACKSIMSUBSCRIBE
-            // system.Terminate() |> ignore
-        elif command.[0].CompareTo("Tweet")=0 then
-            let tweetmsg = "Tweet|"+mailbox.Self.Path.Name+"|"+"Hello @"+command.[1]+" #"+command.[2]
+        if command.[0].CompareTo("initZipf") = 0 then 
+            rank <- command.[1] |> int
+            twitterServer<!"Register|"+mailbox.Self.Path.Name
+            // Add scheduler
+            // system.Scheduler.ScheduleTellOnce()
+        elif command.[0].CompareTo("AddSubs") = 0 then
+            addSubscriber rank workersList
+            sendTweetToServer mailbox.Self rank workersList
+        elif command.[0].CompareTo("TweetSch") = 0 then
+            sendTweetToServer mailbox.Self rank workersList
+        elif command.[0].CompareTo("QUIT") = 0 then
+            mailbox.Context.System.Terminate() |> ignore 
+
+
+        // elif command.[0].CompareTo("Register")=0 then
+        //     cid <- command.[1] |> int
+        //     sim <- mailbox.Sender()
+        //     twitterServer <! "Register|"+mailbox.Self.Path.Name
+        // elif command.[0].CompareTo("Login") = 0 then
+        //     twitterServer <! "Login|"+serveruserid
+        // elif command.[0].CompareTo("Logout") = 0 then
+        //     twitterServer <! "Logout|"+serveruserid
+        // elif command.[0].CompareTo("ACK")=0 then
+        //     if command.[1].CompareTo("Register") = 0 then
+        //         serveruserid <- command.[2]
+        //         sim <! ACK
+        //     elif command.[1].CompareTo("Login") = 0 then
+        //         printRef <! "User "+serveruserid+" Logged in" 
+        //         activeStatus.[cid] <- true
+        //     elif command.[1].CompareTo("Logout") = 0 then
+        //         printRef <!  "User "+serveruserid+" Logged out" 
+        //         activeStatus.[cid] <- false
+        //     elif command.[1].CompareTo("Tweet") = 0 then
+        //         sim <! ACKSIMTWEET
+        //     elif command.[1].CompareTo("Subscribe") = 0 then
+        //         sim <! ACKSIMSUBSCRIBE
+        //     // system.Terminate() |> ignore
+        // elif command.[0].CompareTo("Tweet")=0 then
+        //     let tweetmsg = "Tweet|"+mailbox.Self.Path.Name+"|"+"Hello @"+command.[1]+" #"+command.[2]
             
-            twitterServer <! tweetmsg
-            // if rnd.Next(0,5) = 2 then
-            //     mailbox.Self <! "Logout|"
-        elif command.[0].CompareTo("Subscribe") = 0 then
-            let req = "Subscribe|"+mailbox.Self.Path.Name+"|"+command.[1]
-            twitterServer <! req
-        elif command.[0].CompareTo("GetTweets") = 0 then
-            let req = "GetTweets|"+mailbox.Self.Path.Name
-            twitterServer <! req
-        elif command.[0].CompareTo("GetMentions") = 0 then
-            let req = "GetMentions|"+mailbox.Self.Path.Name
-            twitterServer <! req
-        elif command.[0].CompareTo("Response") = 0 then
-            if command.[1].CompareTo("GetTweets") = 0 then
-                printRef <! (mailbox.Self.Path.Name+"\n"+command.[2]+"\n")
-            elif command.[1].CompareTo("GetMentions") = 0 then
-                printfn "%s" command.[2]
-                printRef <! (mailbox.Self.Path.Name+"\n"+command.[2]+"\n")
+        //     twitterServer <! tweetmsg
+        //     // if rnd.Next(0,5) = 2 then
+        //     //     mailbox.Self <! "Logout|"
+        // elif command.[0].CompareTo("Subscribe") = 0 then
+        //     let req = "Subscribe|"+mailbox.Self.Path.Name+"|"+command.[1]
+        //     twitterServer <! req
+        // elif command.[0].CompareTo("GetTweets") = 0 then
+        //     let req = "GetTweets|"+mailbox.Self.Path.Name
+        //     twitterServer <! req
+        // elif command.[0].CompareTo("GetMentions") = 0 then
+        //     let req = "GetMentions|"+mailbox.Self.Path.Name
+        //     twitterServer <! req
+        // elif command.[0].CompareTo("Response") = 0 then
+        //     if command.[1].CompareTo("GetTweets") = 0 then
+        //         printRef <! (mailbox.Self.Path.Name+"\n"+command.[2]+"\n")
+        //     elif command.[1].CompareTo("GetMentions") = 0 then
+        //         printfn "%s" command.[2]
+        //         printRef <! (mailbox.Self.Path.Name+"\n"+command.[2]+"\n")
 
         
-        else
-            printRef <! msg
+        // else
+        //     printRef <! msg
         return! loop()
     }
     loop()
@@ -180,13 +206,15 @@ let Simulator (mailbox:Actor<_>)=
 
 let simRef = spawn system "simulator" Simulator
 
-simRef <! Start
+// simRef <! Start
 
 
-// let ZipfDistributuion = 
-//     for i in 0 .. N-1 do
-//         workersList.[i] <! ZipfInit(i+1)
-//         workersList.[i] <! AddSubs(i)
+let ZipfDistributuion = 
+    for i in 0 .. N-1 do
+        workersList.[i] <! "initZipf|"+(string (i+1))
+    Thread.Sleep(1000)
+    for i in 0 .. N-1 do
+        workersList.[i] <! "AddSubs"
 
 system.WhenTerminated.Wait()
 

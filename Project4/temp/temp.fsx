@@ -7,7 +7,14 @@ open Akka.Actor
 open Akka.Configuration
 open Akka.FSharp
 
-let addr = "akka.tcp://TwitterEngine@192.168.0.96:8777/user/RequestHandler"
+
+
+let rnd = System.Random()
+let serverip = fsi.CommandLineArgs.[1] |> string
+let serverport = fsi.CommandLineArgs.[2] |>string
+let simid = fsi.CommandLineArgs.[3] |>string
+//"akka.tcp://RemoteFSharp@localhost:8777/user/server"
+let addr = "akka.tcp://TwitterEngine@" + serverip + ":" + serverport + "/user/RequestHandler"
 
 let configuration = 
     ConfigurationFactory.ParseString(
@@ -24,10 +31,5 @@ let configuration =
             }
         }")
 
-let system = ActorSystem.Create("Temp", configuration)
+let system = ActorSystem.Create("Sampl", configuration)
 let twitterServer = system.ActorSelection(addr)
-// Thread.Sleep(10000)
-twitterServer <! "Done|"
-twitterServer <! "BackupDB|"
-
-system.WhenTerminated.Wait()
