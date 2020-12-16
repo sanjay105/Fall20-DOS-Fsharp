@@ -46,7 +46,7 @@ let Print (mailbox:Actor<_>) =
     loop()
 
 let mutable workersList = []
-let hashtags = [|"sanjay";"DOS";"COP5615";"UF";"Gainesville";"#AKKA";"#FSharp";"#twitter";"#Fall2020";"#deepthi";|]
+let hashtags = [|"#sanjay";"#DOS";"#COP5615";"#UF";"#Gainesville";"#AKKA";"#FSharp";"#twitter";"#Fall2020";"#deepthi";|]
 
 let printRef = spawn system "Print" Print
 

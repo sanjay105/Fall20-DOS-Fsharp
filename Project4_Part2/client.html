@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Twitter</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
+<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js"></script>
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</head>
+<body onload = "loginload()">
+    <nav>
+        <div class="nav-wrapper teal lighten-2">
+            <a href="#" class="brand-logo">Twitter</a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><button class="btn waves-effect waves-light" type="submit" name="action" id="logouthead" onclick="logout()">Logout</button></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div id="main" class="container">
+        <table class="container" id ="reglogin">
+            <thead>
+                <tr>
+                    <th>Register</th>
+                    <th>Login</th>
+                </tr>
+              </thead>
+            <tbody>
+                <tr class="row">
+                    <td class="col-sm">
+                        <div id ="register">
+                            <label for="runame">User Name:</label>
+                            <input type="text" id="runame" name="fname"><br><br>
+                            <label for="rpass">Password:</label>
+                            <input type="password" id="rpass" name="pwd"><br><br>
+                            <button class="btn waves-effect waves-light" type="submit" name="action" onclick="register()">Register</button>
+                        </div>
+                    </td>
+                    <td class="col-sm">
+                        <div id ="login">
+                            <label for="luname">User Name:</label>
+                            <input type="text" id="luname" name="fname"><br><br>
+                            <label for="lpass">Password:</label>
+                            <input type="password" id="lpass" name="pwd"><br><br>
+                            <button class="btn waves-effect waves-light" type="submit" name="action" onclick="login()">Login</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        
+        <div id="full">
+            <table>
+            <tbody>
+                <div class="container">
+                    <tr class="row">
+                        <td class="col-sm">
+                            <div id = "divtweet">
+                                <label for="tweet">Tweet:</label>
+                                <input type="text" id="tweet" name="tweet"><br><br>
+                                <button class="btn waves-effect waves-light" type="submit" name="tweet" onclick="tweet()">Tweet</button>
+                            </div>
+                        </td>
+                        <td class="col-sm">
+                            <div id = "divfollower">
+                                <label for="follower">Follow:</label>
+                                <input type="text" id="follower" name="follower"><br><br>
+                                <button class="btn waves-effect waves-light" type="submit" name="follow" onclick="follow()">Follow</button>
+                            </div>
+                        </td>
+                    </tr>
+                </div>
+                <div class="container">
+                    <tr class="row">
+                        <td class="col-sm">
+                            <div id = "GetTweets">
+                                <label for="gettweets">Tweets:</label><br>
+                                <textarea id="gettweets" name="gettweets" rows="10" cols="50" disabled style="height: 50%;"></textarea><br><br>
+                                <div id ="dtweets"></div>
+                                <button class="btn waves-effect waves-light" type="submit" name="gettweets" onclick="gettweets()">Get Tweets</button>
+                            </div>
+                        </td>
+                        <td class="col-sm">
+                            <div id = "GetHashTags">
+                                <label for="gethashtags">Hashtags:</label>
+                                <textarea id="gethashtags" name="gethashtags" rows="10" cols="50" disabled style="height: 40%;"></textarea><br>
+                                <label for="hashtag">Hashtag</label>
+                                <input type="text" id="hashtag" name="hashtag"><br>
+                                <button class="btn waves-effect waves-light" type="submit" name="gethashtags" onclick="gethashtags()">Get HashTags</button>
+                            </div>
+                        </td>
+                        <td class="col-sm">
+                            <div id = "GetMentions">
+                                <label for="getmentions">Mentions:</label>
+                                <textarea id="getmentions" name="getmentions" rows="10" cols="50" disabled style="height: 50%;"></textarea><br><br>
+                                <button class="btn waves-effect waves-light" type="submit" name="getmentions" onclick="getmentions()">Get Mentions</button>
+                            </div>
+                        </td>
+                    </tr>
+                </div>
+            </tbody>
+            </table>
+            <div id="output">
+                <h3>Live Feed</h3>
+            </div>
+        </div>
+        
+    </div>
+    <script type="text/javascript">
+        var username = ""
+        function loginload(){
+            
+            document.getElementById("full").style.display="none";
+            document.getElementById("logouthead").style.display="none";
+            document.getElementById("reglogin").style.display="block";
+            clearinput();
+        }
+        function userload(){
+            
+            document.getElementById("full").style.display="block";
+            document.getElementById("logouthead").style.display="block";
+            document.getElementById("reglogin").style.display="none";
+            clearinput();
+        }
+        function clearinput(){
+            var elements = document.getElementsByTagName("input");
+            for (var ii=0; ii < elements.length; ii++) {
+                elements[ii].value = "";
+            }   
+            elements = document.getElementsByTagName("textarea");
+            for (var ii=0; ii < elements.length; ii++) {
+                elements[ii].value = "";
+            }
+        }
+        function register(){
+            // console.log("register");
+            var url = "http://127.0.0.1:8080/register";
+            var uname = document.getElementById("runame").value;
+            var pwd = document.getElementById("rpass").value;
+            var data = JSON.stringify({'UserName':uname,"Password":pwd});
+            clearinput();
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: data,
+                dataType: "json",
+                success: function(data){
+                    if(data.error){
+                        
+                    }else{
+                        // alert(data.Comment);
+                    }
+                    alert(data.Comment);
+                    
+                }
+            });
+            
+            
+        }
+        function login(){
+            var url = "http://127.0.0.1:8080/login";
+            var uname = document.getElementById("luname").value;
+            var pwd = document.getElementById("lpass").value;
+            var data = JSON.stringify({'UserName':uname,"Password":pwd});
+            clearinput();
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: data,
+                dataType: "json",
+                success: function(data){
+                    if(data.error){
+                        if(data.status == 0){
+                            alert(data.Comment);
+                        }else{
+                            username = uname;
+                            // alert(data.Comment);
+                            startWebSocket();
+                            userload();
+                        }
+                        // alert(data.Comment);  
+                    }else{
+                        username = uname;
+                        startWebSocket();
+                        userload();
+                        // alert(data.Comment); 
+                    }
+                    
+                }
+            });
+            console.log(username)
+        }
+        function logout(){
+            var url = "http://127.0.0.1:8080/logout";
+            var data = JSON.stringify({'UserName':username});
+            clearinput();
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: data,
+                dataType: "json",
+                success: function(data){
+                    if(data.error){
+                        // alert(data.Comment); 
+                    }else{
+                        
+                        // alert(data.Comment); 
+                    }
+                    loginload();
+                    username = "";
+                }
+            });
+        }
+        function tweet(){
+            var url = "http://127.0.0.1:8080/newtweet";
+            var tweett = document.getElementById("tweet").value;
+            var data = JSON.stringify({'Tweet':tweett,'UserName':username});
+            clearinput();
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: data,
+                dataType: "json",
+                success: function(data){
+                    
+                    if(data.error){
+                        alert(data.Comment);
+                        if(data.status < 2){
+                            loginload();
+                        }
+                        // alert(data.Comment); 
+                    }else{
+                        // alert(data.Comment); 
+                    }
+                   
+                    
+                }
+            });
+        }
+        function follow(){
+            var url = "http://127.0.0.1:8080/follow";
+            var following = document.getElementById("follower").value;
+            var data = JSON.stringify({'UserName':username,"Following":following});
+            clearinput();
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: data,
+                dataType: "json",
+                success: function(data){
+                    
+                    if(data.error){
+                        alert(data.Comment);
+                        if(data.status < 2){
+                            loginload();
+                        }
+                        // alert(data.Comment);  
+                    }else{
+                        // username = uname;
+                        // alert(data.Comment); 
+                    }
+                    
+                }
+            });
+        }
+        function gethashtags(){
+            var hashtag = document.getElementById("hashtag").value;
+            var url = "http://127.0.0.1:8080/gethashtags/"+username+"/"+hashtag;
+            clearinput();
+            $.ajax({
+                type: "GET",
+                url: url,
+                dataType: "json",
+                success: function(data){
+                    
+                    if(data.error){
+                        alert(data.Comment);
+                        if(data.status < 2){
+                            loginload();
+                        }
+                        // alert(data.Comment); 
+                    }else{
+                        // alert(data.Comment); 
+                        var text = "";
+                        for (i=0;i<data.Content.length;i++){
+                            text += data.Content[i]+"\n"
+                        }
+                        document.getElementById("gethashtags").value = text
+                    }
+                    
+                    
+                }
+            });
+        }
+        function getmentions(){
+            var url = "http://127.0.0.1:8080/getmentions/"+username;
+            clearinput();
+            $.ajax({
+                type: "GET",
+                url: url,
+                dataType: "json",
+                success: function(data){
+                    if(data.error){
+                        alert(data.Comment);
+                        if(data.status < 2){
+                            loginload();
+                        }
+                        // alert(data.Comment); 
+                    }else{
+                        // alert(data.Comment); 
+                        var text = "";
+                        for (i=0;i<data.Content.length;i++){
+                            text += data.Content[i]+"\n"
+                        }
+                        document.getElementById("getmentions").value = text
+                    }
+                    
+                    
+                }
+            });
+        }
+        function gettweets(){
+            var url = "http://127.0.0.1:8080/gettweets/"+username;
+            clearinput();
+            $.ajax({
+                type: "GET",
+                url: url,
+                dataType: "json",
+                success: function(data){
+                    if(data.error){
+                        alert(data.Comment);
+                        if(data.status < 2){
+                            loginload();
+                        }
+                        // alert(data.Comment); 
+                    }else{
+                        // alert(data.Comment); 
+                        var text = "";
+                        for (i=0;i<data.Content.length;i++){
+                            text += data.Content[i]+"\n";
+                        }
+                        document.getElementById("gettweets").value = text
+                    }
+                    
+                    
+                }
+            });
+        }
+        var output;
+        function startWebSocket(){
+            var wsUri = "ws://localhost:8080/websocket";
+            websocket = new WebSocket(wsUri);
+            output = document.getElementById("output");
+            websocket.onopen = function(evt) { onOpen(evt) };
+            websocket.onclose = function(evt) { onClose(evt) };
+            websocket.onmessage = function(evt) { onMessage(evt) };
+            websocket.onerror = function(evt) { onError(evt) };
+        }
+        function onOpen(evt)
+        {
+            writeToScreen("CONNECTED To Server");
+            // doSend("WebSocket rocks");
+            var message = "UserName:"+username;
+            doSend(message);
+        }
+
+        function onClose(evt)
+        {
+            writeToScreen("DISCONNECTED to the Server");
+        }
+
+        function onMessage(evt)
+        {
+            writeToScreen('<span style="color: blue;"> ' + evt.data+'</span>');
+        }
+
+        function onError(evt)
+        {
+            writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
+        }
+
+        function doSend(message)
+        {
+            // writeToScreen("SENT: " + message);
+            console.log("sending"+message) ;
+            websocket.send(message);
+        }
+
+        function writeToScreen(message)
+        {
+            var pre = document.createElement("p");
+            pre.style.wordWrap = "break-word";
+            pre.innerHTML = message;
+            output.appendChild(pre);
+        }
+        // application code here!
+
+    </script>
+</body>
+</html>

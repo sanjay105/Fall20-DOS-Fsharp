@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <RestoreSuccess Condition=" '$(RestoreSuccess)' == '' ">True</RestoreSuccess>
+    <RestoreTool Condition=" '$(RestoreTool)' == '' ">NuGet</RestoreTool>
+    <ProjectAssetsFile Condition=" '$(ProjectAssetsFile)' == '' ">$(MSBuildThisFileDirectory)project.assets.json</ProjectAssetsFile>
+    <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
+    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">C:\Users\Sanjay\.nuget\packages\</NuGetPackageFolders>
+    <NuGetProjectStyle Condition=" '$(NuGetProjectStyle)' == '' ">PackageReference</NuGetProjectStyle>
+    <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">5.7.0</NuGetToolVersion>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <SourceRoot Include="$([MSBuild]::EnsureTrailingSlash($(NuGetPackageFolders)))" />
+  </ItemGroup>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <PkgFSharp_Core Condition=" '$(PkgFSharp_Core)' == '' ">C:\Users\Sanjay\.nuget\packages\fsharp.core\5.0.0</PkgFSharp_Core>
+    <PkgSuave Condition=" '$(PkgSuave)' == '' ">C:\Users\Sanjay\.nuget\packages\suave\2.6.0</PkgSuave>
+    <PkgNewtonsoft_Json Condition=" '$(PkgNewtonsoft_Json)' == '' ">C:\Users\Sanjay\.nuget\packages\newtonsoft.json\12.0.3</PkgNewtonsoft_Json>
+    <PkgAkka Condition=" '$(PkgAkka)' == '' ">C:\Users\Sanjay\.nuget\packages\akka\1.4.12</PkgAkka>
+    <PkgAkka_Remote Condition=" '$(PkgAkka_Remote)' == '' ">C:\Users\Sanjay\.nuget\packages\akka.remote\1.4.12</PkgAkka_Remote>
+    <PkgAkka_FSharp Condition=" '$(PkgAkka_FSharp)' == '' ">C:\Users\Sanjay\.nuget\packages\akka.fsharp\1.4.12</PkgAkka_FSharp>
+  </PropertyGroup>
+</Project>
